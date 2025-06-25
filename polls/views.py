@@ -5,15 +5,21 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 
+from .forms import ContactForm
+from django.views.generic.edit import FormView
+
 from django.utils import timezone
 
 from .models import Choice, Question
-
+from django.views.generic.edit import UpdateView
+from django.views.generic.edit import CreateView
+from .models import Author
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
 
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
-    context_object_name = "latest_question_list"
-    model = Question
+    
 
     def get_queryset(self):
     # """
@@ -24,7 +30,7 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
-    model = Question
+
     template_name = "polls/detail.html"
 
     def get_queryset(self):
@@ -32,6 +38,13 @@ class DetailView(generic.DetailView):
         Excludes any questions that aren't published yet.
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
+    
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context["book_list"] = Question.objects.all()
+        return context
 
 
 class ResultsView(generic.DetailView):
@@ -61,3 +74,44 @@ def vote(request, question_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
 
+
+
+class ContactFormView(FormView):
+    template_name = "contact.html"
+    form_class = ContactForm
+    success_url = "/thanks/"
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        form.send_email()
+        return super().form_valid(form)
+
+
+class AuthorCreateView(CreateView):
+    model = Author
+    fields = ["name"]
+    template_name ="polls/author_form.html"
+    success_url = "/polls/thanks/"
+
+class AuthorUpdateView(UpdateView):
+    model = Question
+    fields = ["question_text"]
+    template_name = "polls/author_update_form.html"
+
+    def get_success_url(self):
+        return reverse("polls:index")
+
+class AuthorDeleteView(DeleteView):
+    model = Author
+    success_url = reverse_lazy("author-list")
+
+
+# class AuthorView(generic.UpdateView):
+#     model = Author
+#     fields = ['Name']
+#     template_name = "polls/author_update_form.html"
+#     success_url = "/thanks/"
+
+
+    

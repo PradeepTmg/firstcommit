@@ -1,15 +1,21 @@
+{% extends "base.html" %}
 {% load static %}
-
+{% block title %}Pradeep{% endblock %}
+{% block head %}
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+{% endblock %}
+{% block content %}
 
-
-{% if latest_question_list %}
+{% if object_list %}
+<h1> Questions </h1>
     <ul>
-    {% for question in latest_question_list %}
+    {% for question in object_list %}
        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+
     {% endfor %}
-    
+
     </ul>
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+{% endblock %}
