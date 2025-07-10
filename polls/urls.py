@@ -1,6 +1,7 @@
 from django.urls import path
-
-from . import views
+from django.conf import settings
+from django.conf.urls.static import static
+from .import views
 
 app_name = "polls"
 urlpatterns = [
@@ -11,4 +12,5 @@ urlpatterns = [
     path("contact/", views.ContactFormView.as_view(),name="contact"),
     path("create/",views.AuthorCreateView.as_view(),name="create"),
     path("<int:pk>/update/",views.AuthorUpdateView.as_view(),name="update"),
+    path("<int:pk>/delete/",views.AuthorDeleteView.as_view(),name="delete"),
 ]

@@ -17,6 +17,11 @@ from .models import Author
 from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
+
+
+from django.contrib.auth import authenticate, login
+
+
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
     
@@ -100,11 +105,12 @@ class AuthorUpdateView(UpdateView):
     template_name = "polls/author_update_form.html"
 
     def get_success_url(self):
-        return reverse("polls:index")
+        return reverse("polls:detail",args=[self.object.id])
 
 class AuthorDeleteView(DeleteView):
-    model = Author
-    success_url = reverse_lazy("author-list")
+    model = Question
+    template_name="polls/author_confirm_delete.html"
+    success_url = reverse_lazy("polls:index")
 
 
 # class AuthorView(generic.UpdateView):
@@ -114,4 +120,3 @@ class AuthorDeleteView(DeleteView):
 #     success_url = "/thanks/"
 
 
-    
